@@ -104,7 +104,9 @@ export class DB {
         throw new Error('Invalid SQLite path');
       }
       if (!fs.existsSync(parentDir)) {
-        fs.mkdirSync(parentDir, { recursive: true });
+        const dbPath = process.env.DB_PATH || '/data';
+        fs.mkdirSync(dbPath, { recursive: true });
+
       }
       logger.debug(`Opening SQLite database: ${this.uri.filename}`);
 
