@@ -35,6 +35,15 @@ import { DoctorWhoUniversePreset } from './doctorWhoUniverse';
 import { WebStreamrPreset } from './webstreamr';
 import { TMDBAddonPreset } from './tmdb';
 import { TorrentsDbPreset } from './torrentsDb';
+import { USATVPreset } from './usaTv';
+import { ArgentinaTVPreset } from './argentinaTv';
+import { OpenSubtitlesV3PlusPreset } from './opensubtitles-v3-plus';
+import { SubSourcePreset } from './subsource';
+import { SubDLPreset } from './subdl';
+import { AISearchPreset } from './aiSearch';
+import { FKStreamPreset } from './fkstream';
+import { AIOSubtitlePreset } from './aiosubtitle';
+import { SubHeroPreset } from './subhero';
 
 const PRESET_LIST: string[] = [
   'custom',
@@ -48,6 +57,7 @@ const PRESET_LIST: string[] = [
   'orion',
   'torrents-db',
   'streamfusion',
+  'fkstream',
   'debridio',
   'torbox',
   'easynews',
@@ -56,8 +66,11 @@ const PRESET_LIST: string[] = [
   'dmm-cast',
   'nuvio-streams',
   'webstreamr',
+  'usa-tv',
+  'argentina-tv',
   'debridio-tv',
   'debridio-watchtower',
+  'ai-search',
   'tmdb-addon',
   'debridio-tmdb',
   'debridio-tvdb',
@@ -72,6 +85,11 @@ const PRESET_LIST: string[] = [
   'dc-universe',
   'doctor-who-universe',
   'opensubtitles',
+  'opensubtitles-v3-plus',
+  'subsource',
+  'subdl',
+  'subhero',
+  'aiosubtitle',
   'aiostreams',
 ];
 
@@ -140,6 +158,8 @@ export class PresetManager {
         return OrionPreset;
       case 'streamfusion':
         return StreamFusionPreset;
+      case 'fkstream':
+        return FKStreamPreset;
       case 'anime-kitsu':
         return AnimeKitsuPreset;
       case 'nuvio-streams':
@@ -166,6 +186,22 @@ export class PresetManager {
         return TMDBAddonPreset;
       case 'torrents-db':
         return TorrentsDbPreset;
+      case 'usa-tv':
+        return USATVPreset;
+      case 'argentina-tv':
+        return ArgentinaTVPreset;
+      case 'opensubtitles-v3-plus':
+        return OpenSubtitlesV3PlusPreset;
+      case 'subsource':
+        return SubSourcePreset;
+      case 'subdl':
+        return SubDLPreset;
+      case 'ai-search':
+        return AISearchPreset;
+      case 'aiosubtitle':
+        return AIOSubtitlePreset;
+      case 'subhero':
+        return SubHeroPreset;
       default:
         throw new Error(`Preset ${id} not found`);
     }

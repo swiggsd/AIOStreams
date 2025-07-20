@@ -7,14 +7,14 @@ import {
   AIOStream,
 } from '../db';
 import { Preset, baseOptions } from './preset';
-import { Env, formatZodError, RESOURCES } from '../utils';
+import { constants, Env, formatZodError, RESOURCES } from '../utils';
 import { StreamParser } from '../parser';
 import { createLogger } from '../utils';
 
 const logger = createLogger('parser');
 
 class AIOStreamsStreamParser extends StreamParser {
-  override parse(stream: Stream): ParsedStream {
+  override parse(stream: Stream): ParsedStream | { skip: true } {
     const aioStream = stream as AIOStream;
     const parsed = AIOStream.safeParse(aioStream);
     if (!parsed.success) {
@@ -22,6 +22,12 @@ class AIOStreamsStreamParser extends StreamParser {
         `Stream from AIOStream was not detected as a valid stream: ${formatZodError(parsed.error)}`
       );
       throw new Error('Invalid stream');
+    }
+    if (
+      aioStream.streamData.id?.endsWith('external-download') ||
+      aioStream.streamData.type === constants.STATISTIC_STREAM_TYPE
+    ) {
+      return { skip: true };
     }
     const addonName = this.addon?.name?.trim();
     return {

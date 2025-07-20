@@ -168,7 +168,7 @@ export type FormatterType = (typeof FORMATTERS)[number];
 const REALDEBRID_SERVICE = 'realdebrid';
 const DEBRIDLINK_SERVICE = 'debridlink';
 const PREMIUMIZE_SERVICE = 'premiumize';
-const ALLEDEBRID_SERVICE = 'alldebrid';
+const ALLDEBRID_SERVICE = 'alldebrid';
 const TORBOX_SERVICE = 'torbox';
 const EASYDEBRID_SERVICE = 'easydebrid';
 const PUTIO_SERVICE = 'putio';
@@ -181,7 +181,7 @@ const SERVICES = [
   REALDEBRID_SERVICE,
   DEBRIDLINK_SERVICE,
   PREMIUMIZE_SERVICE,
-  ALLEDEBRID_SERVICE,
+  ALLDEBRID_SERVICE,
   TORBOX_SERVICE,
   EASYDEBRID_SERVICE,
   PUTIO_SERVICE,
@@ -255,8 +255,8 @@ const SERVICE_DETAILS: Record<
       },
     ],
   },
-  [ALLEDEBRID_SERVICE]: {
-    id: ALLEDEBRID_SERVICE,
+  [ALLDEBRID_SERVICE]: {
+    id: ALLDEBRID_SERVICE,
     name: 'AllDebrid',
     shortName: 'AD',
     knownNames: ['AD', 'All Debrid', 'AllDebrid', 'All-Debrid'],
@@ -738,6 +738,7 @@ export const HTTP_STREAM_TYPE = 'http' as const;
 export const EXTERNAL_STREAM_TYPE = 'external' as const;
 export const YOUTUBE_STREAM_TYPE = 'youtube' as const;
 export const ERROR_STREAM_TYPE = 'error' as const;
+export const STATISTIC_STREAM_TYPE = 'statistic' as const;
 
 const STREAM_TYPES = [
   P2P_STREAM_TYPE,
@@ -748,6 +749,7 @@ const STREAM_TYPES = [
   EXTERNAL_STREAM_TYPE,
   YOUTUBE_STREAM_TYPE,
   ERROR_STREAM_TYPE,
+  STATISTIC_STREAM_TYPE,
 ] as const;
 
 export type StreamType = (typeof STREAM_TYPES)[number];
@@ -887,7 +889,7 @@ export {
   ADDON_CATALOG_RESOURCE,
   REALDEBRID_SERVICE,
   PREMIUMIZE_SERVICE,
-  ALLEDEBRID_SERVICE,
+  ALLDEBRID_SERVICE,
   DEBRIDLINK_SERVICE,
   TORBOX_SERVICE,
   EASYDEBRID_SERVICE,

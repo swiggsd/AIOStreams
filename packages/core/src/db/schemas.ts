@@ -43,8 +43,9 @@ const StreamProxyConfig = z.object({
   enabled: z.boolean().optional(),
   id: z.enum(constants.PROXY_SERVICES).optional(),
   url: z.string().optional(),
+  publicUrl: z.string().optional(),
   credentials: z.string().optional(),
-  publicIp: z.string().ip().optional(),
+  publicIp: z.union([z.string().ip(), z.literal('')]).optional(),
   proxiedAddons: z.array(z.string().min(1)).optional(),
   proxiedServices: z.array(z.string().min(1)).optional(),
 });
@@ -215,6 +216,7 @@ const OptionDefinition = z.object({
           'patreon',
           'buymeacoffee',
           'github-sponsors',
+          'donate',
         ]),
         url: z.string().url(),
       })
@@ -251,10 +253,12 @@ const CatalogModification = z.object({
   shuffle: z.boolean().optional(), // shuffle the catalog
   persistShuffleFor: z.number().min(0).max(24).optional(), // persist the shuffle for a given amount of time (in hours)
   onlyOnDiscover: z.boolean().optional(), // only show the catalog on the discover page
+  disableSearch: z.boolean().optional(), // disable the search for the catalog
   enabled: z.boolean().optional(), // enable or disable the catalog
   rpdb: z.boolean().optional(), // use rpdb for posters if supported
   overrideType: z.string().min(1).optional(), // override the type of the catalog
   hideable: z.boolean().optional(), // hide the catalog from the home page
+  searchable: z.boolean().optional(), // property of whether the catalog is searchable (not a search only catalog)
   addonName: z.string().min(1).optional(), // the name of the addon that provides the catalog
 });
 
@@ -331,9 +335,10 @@ export const UserDataSchema = z.object({
   excludeUncachedFromServices: z.array(z.string().min(1)).optional(),
   excludeUncachedFromStreamTypes: z.array(StreamTypes).optional(),
   excludeUncachedMode: z.enum(['or', 'and']).optional(),
-  excludedStreamExpressions: z.array(z.string().min(1).max(1000)).optional(),
-  requiredStreamExpressions: z.array(z.string().min(1).max(1000)).optional(),
-  preferredStreamExpressions: z.array(z.string().min(1).max(1000)).optional(),
+  excludedStreamExpressions: z.array(z.string().min(1).max(3000)).optional(),
+  requiredStreamExpressions: z.array(z.string().min(1).max(3000)).optional(),
+  preferredStreamExpressions: z.array(z.string().min(1).max(3000)).optional(),
+  includedStreamExpressions: z.array(z.string().min(1).max(3000)).optional(),
   groups: z
     .array(
       z.object({
@@ -368,6 +373,8 @@ export const UserDataSchema = z.object({
   size: SizeFilterOptions.optional(),
   hideErrors: z.boolean().optional(),
   hideErrorsForResources: z.array(ResourceSchema).optional(),
+  showStatistics: z.boolean().optional(),
+  statisticsPosition: z.enum(['top', 'bottom']).optional(),
   tmdbAccessToken: z.string().optional(),
   titleMatching: z
     .object({
@@ -387,6 +394,7 @@ export const UserDataSchema = z.object({
     .optional(),
   deduplicator: DeduplicatorOptions.optional(),
   precacheNextEpisode: z.boolean().optional(),
+  alwaysPrecache: z.boolean().optional(),
   services: ServiceList.optional(),
   presets: PresetList,
   catalogModifications: z.array(CatalogModification).optional(),
@@ -531,7 +539,7 @@ export type Stream = z.infer<typeof StreamSchema>;
 const TrailerSchema = z
   .object({
     source: z.string().min(1),
-    type: z.enum(['Trailer']),
+    type: z.enum(['Trailer', 'Clip']),
   })
   .passthrough();
 
@@ -549,7 +557,7 @@ const MetaVideoSchema = z
     title: z.string().or(z.null()).optional(),
     name: z.string().or(z.null()).optional(),
     released: z.string().datetime().or(z.null()).optional(),
-    thumbnail: z.string().url().or(z.null()).optional(),
+    thumbnail: z.string().or(z.null()).optional(),
     streams: z.array(StreamSchema).or(z.null()).optional(),
     available: z.boolean().or(z.null()).optional(),
     episode: z.number().or(z.null()).optional(),
@@ -574,7 +582,9 @@ export const MetaPreviewSchema = z
     imdbRating: z.string().or(z.null()).or(z.number()).optional(),
     releaseInfo: z.string().or(z.number()).or(z.null()).optional(),
     //@deprecated
-    director: z.array(z.string()).or(z.null()).optional(),
+    director: z
+      .union([z.array(z.string().or(z.null())), z.null(), z.string()])
+      .optional(),
     //@deprecated
     cast: z.array(z.string()).or(z.null()).optional(),
     // background: z.string().min(1).optional(),
@@ -626,6 +636,15 @@ export const AddonCatalogResponseSchema = z.object({
 });
 export type AddonCatalogResponse = z.infer<typeof AddonCatalogResponseSchema>;
 export type AddonCatalog = z.infer<typeof AddonCatalogSchema>;
+
+export const ExtrasTypesSchema = z.enum(['skip', 'genre', 'search']);
+export type ExtrasTypes = z.infer<typeof ExtrasTypesSchema>;
+export const ExtrasSchema = z.object({
+  skip: z.coerce.number().optional(),
+  genre: z.string().optional(),
+  search: z.string().optional(),
+});
+export type Extras = z.infer<typeof ExtrasSchema>;
 
 const ParsedFileSchema = z.object({
   releaseGroup: z.string().optional(),
@@ -753,6 +772,7 @@ export const AIOStream = StreamSchema.extend({
       .optional(),
     duration: z.number().optional(),
     library: z.boolean().optional(),
+    id: z.string().min(1).optional(),
   }),
 });
 
@@ -814,12 +834,14 @@ const StatusResponseSchema = z.object({
     customHtml: z.string().optional(),
     protected: z.boolean(),
     regexFilterAccess: z.enum(['none', 'trusted', 'all']),
+    loggingSensitiveInfo: z.boolean(),
     tmdbApiAvailable: z.boolean(),
     forced: z.object({
       proxy: z.object({
         enabled: z.boolean().or(z.null()),
         id: z.string().or(z.null()),
         url: z.string().or(z.null()),
+        publicUrl: z.string().or(z.null()),
         publicIp: z.string().or(z.null()),
         credentials: z.string().or(z.null()),
         disableProxiedAddons: z.boolean(),
@@ -831,6 +853,7 @@ const StatusResponseSchema = z.object({
         enabled: z.boolean().or(z.null()),
         id: z.string().or(z.null()),
         url: z.string().or(z.null()),
+        publicUrl: z.string().or(z.null()),
         publicIp: z.string().or(z.null()),
         credentials: z.string().or(z.null()),
         proxiedServices: z.array(z.string()).or(z.null()),

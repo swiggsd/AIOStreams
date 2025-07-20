@@ -6,6 +6,7 @@ import { useUserData } from '@/context/userData';
 import { SettingsCard } from '../shared/settings-card';
 import { Combobox } from '../ui/combobox';
 import { RESOURCES } from '../../../../core/src/utils/constants';
+import { Select } from '../ui/select';
 
 export function MiscellaneousMenu() {
   return (
@@ -38,7 +39,7 @@ function Content() {
           description="When requesting streams for series, AIOStreams will automatically request the next episode and if all streams are uncached, it will ping the URL of the first uncached stream according to your sort settings."
         >
           <Switch
-            label="Enabled"
+            label="Enable"
             side="right"
             value={userData.precacheNextEpisode}
             onValueChange={(value) => {
@@ -48,19 +49,64 @@ function Content() {
               }));
             }}
           />
+          <Switch
+            label="Always Pre-cache"
+            help="If enabled, AIOStreams will always attempt to precache the next episode of a series, even if there is already a cached stream available."
+            side="right"
+            disabled={!userData.precacheNextEpisode}
+            value={userData.alwaysPrecache}
+            onValueChange={(value) => {
+              setUserData((prev) => ({
+                ...prev,
+                alwaysPrecache: value,
+              }));
+            }}
+          />
         </SettingsCard>
         <SettingsCard
           title="External Downloads"
           description="Adds a stream that automatically opens the stream in your browser below every stream for easier downloading"
         >
           <Switch
-            label="Enabled"
+            label="Enable"
             side="right"
             value={userData.externalDownloads}
             onValueChange={(value) => {
               setUserData((prev) => ({
                 ...prev,
                 externalDownloads: value,
+              }));
+            }}
+          />
+        </SettingsCard>
+        <SettingsCard
+          title="Show Statistics"
+          description="AIOStreams will return the statistics of stream fetches and response times for each addon if enabled."
+        >
+          <Switch
+            label="Enable"
+            side="right"
+            value={userData.showStatistics}
+            onValueChange={(value) => {
+              setUserData((prev) => ({
+                ...prev,
+                showStatistics: value,
+              }));
+            }}
+          />
+          <Select
+            label="Statistics Position"
+            help="Whether to show the statistic streams at the top or bottom of the stream list."
+            disabled={!userData.showStatistics}
+            options={[
+              { label: 'Top', value: 'top' },
+              { label: 'Bottom', value: 'bottom' },
+            ]}
+            value={userData.statisticsPosition || 'bottom'}
+            onValueChange={(value) => {
+              setUserData((prev) => ({
+                ...prev,
+                statisticsPosition: value as 'top' | 'bottom',
               }));
             }}
           />

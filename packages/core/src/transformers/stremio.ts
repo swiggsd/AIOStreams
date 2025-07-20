@@ -43,9 +43,15 @@ export class StremioTransformer {
   }
 
   async transformStreams(
-    response: AIOStreamsResponse<ParsedStream[]>
+    response: AIOStreamsResponse<{
+      streams: ParsedStream[];
+      statistics: { title: string; description: string }[];
+    }>
   ): Promise<AIOStreamResponse> {
-    const { data: streams, errors } = response;
+    const {
+      data: { streams, statistics },
+      errors,
+    } = response;
 
     let transformedStreams: AIOStream[] = [];
 
@@ -110,6 +116,7 @@ export class StremioTransformer {
             : undefined,
           infoHash:
             stream.type === 'p2p' ? stream.torrent?.infoHash : undefined,
+          fileIdx: stream.type === 'p2p' ? stream.torrent?.fileIdx : undefined,
           ytId: stream.type === 'youtube' ? stream.ytId : undefined,
           externalUrl:
             stream.type === 'external' ? stream.externalUrl : undefined,
@@ -148,6 +155,7 @@ export class StremioTransformer {
             message: stream.message,
             regexMatched: stream.regexMatched,
             keywordMatched: stream.keywordMatched,
+            id: stream.id,
           },
         };
       })
@@ -163,6 +171,23 @@ export class StremioTransformer {
           })
         )
       );
+    }
+
+    if (this.userData.showStatistics) {
+      let position = this.userData.statisticsPosition || 'bottom';
+      let statisticStreams = statistics.map((statistic) => ({
+        name: statistic.title,
+        description: statistic.description,
+        externalUrl: 'https://github.com/Viren070/AIOStreams',
+        streamData: {
+          type: constants.STATISTIC_STREAM_TYPE,
+        },
+      }));
+      if (position === 'bottom') {
+        transformedStreams.push(...statisticStreams);
+      } else {
+        transformedStreams.unshift(...statisticStreams);
+      }
     }
 
     return {
@@ -268,6 +293,7 @@ export class StremioTransformer {
           title: errorTitle,
           description: errorDescription,
         },
+        id: `error.${errorTitle}`,
       },
     };
   }
@@ -291,7 +317,7 @@ export class StremioTransformer {
       errorDescription = 'Unknown error',
     } = options;
     return {
-      id: `error.${errorTitle}`,
+      id: `aiostreamserror.${encodeURIComponent(JSON.stringify(options))}`,
       name: errorTitle,
       description: errorDescription,
       type: 'movie',

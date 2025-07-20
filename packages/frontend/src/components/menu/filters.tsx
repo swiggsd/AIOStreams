@@ -1117,7 +1117,7 @@ function Content() {
               <div className="space-y-4">
                 <SettingsCard
                   title="Title Matching"
-                  description="Any streams which don't specifically match the requested title will be filtered out. You can optionally choose to only apply it to specific request types and addons"
+                  description="Any streams which don't specifically match the requested title will be filtered out. You can optionally choose to only apply it to specific request types and addons. This requires a TMDB Read Access Token to be set in the Services menu."
                 >
                   <Switch
                     label="Enabled"
@@ -1171,37 +1171,6 @@ function Content() {
                           ...prev.titleMatching,
                           mode: value as 'exact' | 'contains' | undefined,
                         },
-                      }));
-                    }}
-                  />
-
-                  <PasswordInput
-                    label="TMDB Access Token"
-                    help={
-                      <>
-                        <p>
-                          A TMDB access token is required to fetch titles from
-                          the TMDB API. You can get it from your{' '}
-                          <a
-                            href="https://www.themoviedb.org/settings/api"
-                            target="_blank"
-                            className="text-[--brand] hover:underline"
-                            rel="noopener noreferrer"
-                          >
-                            TMDB Account Settings
-                          </a>
-                        </p>
-                        <p></p>
-                      </>
-                    }
-                    disabled={!userData.titleMatching?.enabled}
-                    required={!status?.settings.tmdbApiAvailable}
-                    value={userData.tmdbAccessToken}
-                    placeholder="Enter your TMDB access token"
-                    onValueChange={(value) => {
-                      setUserData((prev) => ({
-                        ...prev,
-                        tmdbAccessToken: value,
                       }));
                     }}
                   />
@@ -1452,6 +1421,34 @@ function Content() {
                         ),
                         value,
                         ...(prev.excludedStreamExpressions || []).slice(
+                          index + 1
+                        ),
+                      ],
+                    }));
+                  }}
+                />
+                <TextInputs
+                  label="Included Stream Expressions"
+                  itemName="Expression"
+                  help="The expressions to apply to the streams. Streams selected by any of these expressions will be included in the results."
+                  placeholder="addon(type(streams, 'debrid'), 'TorBox')"
+                  values={userData.includedStreamExpressions || []}
+                  onValuesChange={(values) => {
+                    setUserData((prev) => ({
+                      ...prev,
+                      includedStreamExpressions: values,
+                    }));
+                  }}
+                  onValueChange={(value, index) => {
+                    setUserData((prev) => ({
+                      ...prev,
+                      includedStreamExpressions: [
+                        ...(prev.includedStreamExpressions || []).slice(
+                          0,
+                          index
+                        ),
+                        value,
+                        ...(prev.includedStreamExpressions || []).slice(
                           index + 1
                         ),
                       ],

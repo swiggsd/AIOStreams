@@ -314,6 +314,11 @@ export const Env = cleanEnv(process.env, {
     desc: 'Default user agent for the addon',
   }),
 
+  HOSTNAME_USER_AGENT_OVERRIDES: str({
+    default: '*.strem.fun:Stremio',
+    desc: 'Comma separated list of hostname:useragent pairs. Takes priority over any other user agent settings.',
+  }),
+
   DEFAULT_MAX_CACHE_SIZE: num({
     default: 100000,
     desc: 'Default max cache size for a cache instance',
@@ -349,6 +354,12 @@ export const Env = cleanEnv(process.env, {
     default: 604800, // 7 days
     desc: 'Cache TTL for RPDB API key validity',
   }),
+
+  PRECACHE_NEXT_EPISODE_MIN_INTERVAL: num({
+    default: 86400, // 24 hours
+    desc: 'Minimum interval for precaching the next episode of the current episode in seconds. i.e. the minimum wait before attempting to precache the same next episode again.',
+  }),
+
   // configuration settings
 
   MAX_ADDONS: num({
@@ -360,7 +371,7 @@ export const Env = cleanEnv(process.env, {
     default: 30,
     desc: 'Max number of keyword filters',
   }),
-  MAX_CONDITION_FILTERS: num({
+  MAX_STREAM_EXPRESSION_FILTERS: num({
     default: 30,
     desc: 'Max number of condition filters',
   }),
@@ -379,8 +390,20 @@ export const Env = cleanEnv(process.env, {
   }),
 
   DEFAULT_TIMEOUT: num({
-    default: 15000,
+    default: 10000,
     desc: 'Default timeout for the addon',
+  }),
+  CATALOG_TIMEOUT: num({
+    default: 30000,
+    desc: 'Timeout for catalog requests',
+  }),
+  META_TIMEOUT: num({
+    default: 30000,
+    desc: 'Timeout for meta requests',
+  }),
+  MANIFEST_TIMEOUT: num({
+    default: 3000,
+    desc: 'Timeout for manifest requests',
   }),
 
   FORCE_PUBLIC_PROXY_HOST: host({
@@ -410,6 +433,10 @@ export const Env = cleanEnv(process.env, {
     default: undefined,
     desc: 'Force proxy url',
   }),
+  FORCE_PROXY_PUBLIC_URL: url({
+    default: undefined,
+    desc: 'Force proxy public url',
+  }),
   FORCE_PROXY_CREDENTIALS: str({
     default: undefined,
     desc: 'Force proxy credentials',
@@ -438,6 +465,10 @@ export const Env = cleanEnv(process.env, {
   DEFAULT_PROXY_URL: url({
     default: undefined,
     desc: 'Default proxy url',
+  }),
+  DEFAULT_PROXY_PUBLIC_URL: url({
+    default: undefined,
+    desc: 'Default proxy public url',
   }),
   DEFAULT_PROXY_CREDENTIALS: str({
     default: undefined,
@@ -1122,6 +1153,123 @@ export const Env = cleanEnv(process.env, {
   DEFAULT_TORRENTS_DB_USER_AGENT: userAgent({
     default: undefined,
     desc: 'Default Torrents DB user agent',
+  }),
+
+  USA_TV_URL: url({
+    default: 'https://848b3516657c-usatv.baby-beamup.club',
+    desc: 'USA TV URL',
+  }),
+  DEFAULT_USA_TV_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default USA TV timeout',
+  }),
+  DEFAULT_USA_TV_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default USA TV user agent',
+  }),
+
+  ARGENTINA_TV_URL: url({
+    default: 'https://848b3516657c-argentinatv.baby-beamup.club',
+    desc: 'Argentina TV URL',
+  }),
+  DEFAULT_ARGENTINA_TV_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default Argentina TV timeout',
+  }),
+  DEFAULT_ARGENTINA_TV_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default Argentina TV user agent',
+  }),
+
+  SUBDL_URL: url({
+    default: 'https://subdl.strem.top',
+    desc: 'SubDL URL',
+  }),
+  DEFAULT_SUBDL_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default SubDL timeout',
+  }),
+  DEFAULT_SUBDL_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default SubDL user agent',
+  }),
+
+  SUBSOURCE_URL: url({
+    default: 'https://subsource.strem.top',
+    desc: 'SubSource URL',
+  }),
+  DEFAULT_SUBSOURCE_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default SubSource timeout',
+  }),
+  DEFAULT_SUBSOURCE_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default SubSource user agent',
+  }),
+
+  OPENSUBTITLES_V3_PLUS_URL: url({
+    default: 'https://opensubtitles.stremio.homes',
+    desc: 'OpenSubtitles V3 Plus URL',
+  }),
+  DEFAULT_OPENSUBTITLES_V3_PLUS_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default OpenSubtitles V3 Plus timeout',
+  }),
+  DEFAULT_OPENSUBTITLES_V3_PLUS_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default OpenSubtitles V3 Plus user agent',
+  }),
+
+  AI_SEARCH_URL: url({
+    default: 'https://stremio.itcon.au',
+    desc: 'AI Search URL',
+  }),
+  DEFAULT_AI_SEARCH_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default AI Search timeout',
+  }),
+  DEFAULT_AI_SEARCH_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default AI Search user agent',
+  }),
+
+  FKSTREAM_URL: url({
+    default: 'https://streamio.fankai.fr',
+    desc: 'FKStream URL',
+  }),
+  DEFAULT_FKSTREAM_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default FKStream timeout',
+  }),
+  DEFAULT_FKSTREAM_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default FKStream user agent',
+  }),
+
+  AIOSUBTITLE_URL: url({
+    default: 'https://3b4bbf5252c4-aio-streaming.baby-beamup.club',
+    desc: 'AIOSubtitle URL',
+  }),
+  DEFAULT_AIOSUBTITLE_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default AIOSubtitle timeout',
+  }),
+  DEFAULT_AIOSUBTITLE_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default AIOSubtitle user agent',
+  }),
+
+  SUBHERO_URL: url({
+    default: 'https://subhero.onrender.com',
+    desc: 'SubHero URL',
+  }),
+  DEFAULT_SUBHERO_TIMEOUT: num({
+    default: undefined,
+    desc: 'Default SubHero timeout',
+  }),
+  DEFAULT_SUBHERO_USER_AGENT: userAgent({
+    default: undefined,
+    desc: 'Default SubHero user agent',
   }),
 
   // Rate limiting settings

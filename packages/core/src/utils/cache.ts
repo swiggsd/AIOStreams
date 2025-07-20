@@ -152,7 +152,7 @@ export class Cache<K, V> {
       if (updateTTL) {
         item.lastAccessed = now;
       }
-      return item.value;
+      return structuredClone(item.value);
     }
     return undefined;
   }
@@ -167,7 +167,10 @@ export class Cache<K, V> {
     if (this.cache.size >= this.maxSize) {
       this.evict();
     }
-    this.cache.set(key, new CacheItem<V>(value, Date.now(), ttl * 1000));
+    this.cache.set(
+      key,
+      new CacheItem<V>(structuredClone(value), Date.now(), ttl * 1000)
+    );
   }
 
   /**
@@ -184,6 +187,18 @@ export class Cache<K, V> {
 
   clear(): void {
     this.cache.clear();
+  }
+
+  getTTL(key: K): number {
+    // return the time left in seconds until the item expires
+    const item = this.cache.get(key);
+    if (item) {
+      return Math.max(
+        0,
+        Math.floor((item.lastAccessed + item.ttl - Date.now()) / 1000)
+      );
+    }
+    return 0;
   }
 
   private evict(): void {
